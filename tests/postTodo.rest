@@ -1,0 +1,11 @@
+POST http://localhost:3000/api/todos
+Content-Type: application/json
+
+{
+    "title": "something again",
+    "day": "09",
+    "month": "08",
+    "year": "2023",
+    "completed": "true",
+    "description": "this is new"
+}
