@@ -1,17 +1,26 @@
 import { dateFormat, sortingAllTodos, handleComplete } from "../services/utils";
 import { deleteTodo, editTodo } from "../services/requests";
 
-import { TodoWithId, ContentProps } from '../types/types'
+import { TodoWithId, ContentProps } from "../types/types";
 
-const Content = ({allTodos, setModalStatus, setSelectedTodo, setAllTodos}: ContentProps) => {
-
+const Content = ({
+  allTodos,
+  setModalStatus,
+  setSelectedTodo,
+  setAllTodos,
+  currentClicked,
+ // setCurrentClicked
+}: ContentProps) => {
   //event handling functions
   const addClickFunction = (): void => {
     setSelectedTodo(null);
     setModalStatus(true);
   };
 
-  const clickDeleteFunction = async (e: React.SyntheticEvent<HTMLElement>, id: number) => {
+  const clickDeleteFunction = async (
+    e: React.SyntheticEvent<HTMLElement>,
+    id: number
+  ) => {
     e.stopPropagation();
     try {
       await deleteTodo(Number(id));
@@ -24,27 +33,32 @@ const Content = ({allTodos, setModalStatus, setSelectedTodo, setAllTodos}: Conte
     }
   };
 
-  const handleCompletedToggle = async (e: React.SyntheticEvent<HTMLElement>, id: number) => {
+  const handleCompletedToggle = async (
+    e: React.SyntheticEvent<HTMLElement>,
+    id: number,
+  ) => {
     e.stopPropagation();
     handleComplete(id, false, allTodos, setAllTodos, setModalStatus, editTodo);
   };
 
-  const handleEditTodo = async (e: React.SyntheticEvent<HTMLElement>, id: number) => {
+  const handleEditTodo = async (
+    e: React.SyntheticEvent<HTMLElement>,
+    id: number
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     const selected = allTodos.find((todo) => todo.id === Number(id)) || null;
     setSelectedTodo(selected);
     setModalStatus(true);
   };
-  //
 
   return (
     <>
       <div id="items">
         <header>
           <dl>
-            <dt>All Todos</dt>
-            <dd>{allTodos.length}</dd>
+            <dt>{currentClicked[1]}</dt>
+            <dd>{currentClicked[0] && currentClicked[0].length}</dd>
           </dl>
         </header>
         <main>
@@ -55,7 +69,7 @@ const Content = ({allTodos, setModalStatus, setSelectedTodo, setAllTodos}: Conte
           <table>
             {
               <tbody>
-                {sortingAllTodos(allTodos).map((todo: TodoWithId) => (
+                {currentClicked[0] && sortingAllTodos(currentClicked[0]).map((todo: TodoWithId) => (
                   <tr
                     onClick={(e) => handleCompletedToggle(e, todo.id)}
                     key={todo.id}

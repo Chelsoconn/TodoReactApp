@@ -92,11 +92,16 @@ const setStatesToNull = ({ setTitle, setDay, setMonth, setYear, setDescription, 
     setCompleted(false)
 }
 
-const sortingAllTodos = (allTodos: AllToDosWithId) => {
-  return allTodos.sort((b, a) => Number(b.completed) - Number(a.completed))
+const sortingAllTodos = (todos: AllToDosWithId) => {
+  return todos.sort((b, a) => Number(b.completed) - Number(a.completed))
 }
 
-const handleComplete = async( currentId: number, bool: boolean, allTodos: AllToDosWithId, setAllTodos: React.Dispatch<React.SetStateAction<AllToDosWithId>> , setModalStatus: React.Dispatch<React.SetStateAction<boolean>>, editTodo: (id: number, updatedTodo: TodoWithId) => Promise<TodoWithId> ) => { 
+const handleComplete = async( currentId: number, bool: boolean, 
+    allTodos: AllToDosWithId, setAllTodos: React.Dispatch<React.SetStateAction<AllToDosWithId>> , 
+    setModalStatus: React.Dispatch<React.SetStateAction<boolean>>, 
+    editTodo: (id: number, updatedTodo: TodoWithId) => Promise<TodoWithId>,
+   
+   ) => { 
     let updatedTodo;
     const newTodoList = allTodos.map((todo) => {
         if (todo.id === currentId) {
@@ -108,12 +113,90 @@ const handleComplete = async( currentId: number, bool: boolean, allTodos: AllToD
       });
       setAllTodos(newTodoList);
       setModalStatus(false)
+  
+      //SET CURRENTCLICKED HERE 
       try {
         if (updatedTodo) await editTodo(currentId, updatedTodo);
       } catch(error) {
         console.log(`There was an error toggling ${error}`)
       }
 } 
+
+const allTodosMapper = (arrayList) => {
+  const todosNav = arrayList.map(todo => {
+    return (todo.month.trim() && todo.year.trim()) ? (`${todo.year},${todo.month},${todo.day}`) : ('0')
+  })  
+  const allSortedDates = todosNav.sort((a,b) => new Date(a) - new Date(b))
+  const counts = {}
+  const sortedDatesFormatted = (allSortedDates).map(date => {
+   if (date === '0') {
+     counts['No Due Date'] = counts['No Due Date'] ?  counts['No Due Date'] + 1 : 1 
+     return 'No Due Date'
+   } else {
+     const sliced = date.slice(0,7).split(',').reverse().join('/')
+     const fin = sliced.slice(0,3) + sliced.slice(5)
+     counts[fin] = counts[fin] ? counts[fin] + 1 : 1
+   }
+  })
+  const finalCompleted = Object.entries(counts)      
+  return finalCompleted
+}
+
+  const matchingTodos = (listArr, dates) => {
+    return listArr.filter(todo => {
+      if ((!todo.month.trim() || !todo.year.trim()) && dates.includes('No Due Date')) return true
+      return (todo.month === dates.slice(0, 2) && todo.year.includes(dates.slice(3,5)))
+    })
+  }
+
+
+  const resetCurrentClicked = (dates, allTodos, setCurrentClicked, completedBool, currentClicked) => {
+    const completedTodos = allTodos.filter(todo => todo.completed)
+
+    if (dates === 'All Todos') {
+    //  console.log('RESETTING THE CLICKED FROM ALL TODOS')
+      setCurrentClicked([allTodos, 'All Todos', allTodos.length, false]);
+    } else if (dates === 'Completed') {
+    //  console.log('RESETTING THE CLICKED FROM COMPLETED TODOS')
+      setCurrentClicked([completedTodos, 'Completed', completedTodos.length, true]);
+    } else {
+
+    
+      if (dates) {
+       
+        let currentTodosToShow;
+
+        if (completedBool) {
+          console.log("HIIIIIII", completedBool)
+          currentTodosToShow = (completedBool[3] || completedBool.includes('completed')) ? matchingTodos(completedTodos, dates) : matchingTodos(allTodos, dates)
+        } else {
+       //   currentTodosToShow = matchingTodos(allTodos, dates)
+        }
+        //console.log(currentTodosToShow, allTodos, dates)
+     
+        if (currentClicked) {
+         // console.log('YES')
+          let ans = currentClicked[3]
+          setCurrentClicked([currentTodosToShow, dates.split(',')[0], currentTodosToShow.length, ans ])
+        } else {
+         // console.log('NO')
+          let ans = currentClicked
+          console.log(ans)
+          setCurrentClicked([currentTodosToShow, dates, currentTodosToShow.length, ans ])
+        }
+
+
+      }
+      
+
+
+    }
+  }
+
+
+
+
+
 
 export { 
     exitModalFunction, 
@@ -124,5 +207,7 @@ export {
     setStatesToNull,
     dateFormat,
     sortingAllTodos,
-    handleComplete
+    handleComplete,
+    allTodosMapper, 
+    resetCurrentClicked
  }

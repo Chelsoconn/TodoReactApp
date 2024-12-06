@@ -16,7 +16,8 @@ export interface ContentProps {
     allTodos: AllToDosWithId;
     setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
     setAllTodos: React.Dispatch<React.SetStateAction<AllToDosWithId>>;
-    setSelectedTodo: React.Dispatch<React.SetStateAction<TodoWithId | null>>
+    setSelectedTodo: React.Dispatch<React.SetStateAction<TodoWithId | null>>;
+    currentClicked: React.Dispatch<React.SetStateAction<[AllToDosWithId, string, number]>>;
 }
 
 export interface ModalProps {

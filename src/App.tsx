@@ -16,6 +16,7 @@ const App = () => {
   const [allTodos, setAllTodos] = useState<AllToDosWithId>([]);
   const [modalStatus, setModalStatus] = useState<boolean>(false);
   const [selectedTodo, setSelectedTodo] = useState<null | TodoWithId>(null);
+  const [currentClicked, setCurrentClicked] = useState<[] | [AllToDosWithId, string, number | string]>([])
   //
 
   //get all todos to set state initially
@@ -24,6 +25,7 @@ const App = () => {
       try {
         const todos = await getAllTodos();
         setAllTodos(todos);
+        setCurrentClicked([todos, 'All Todos', todos.length, false])
       } catch (error) {
         console.log(`Error fetching all todos: ${error} `);
       }
@@ -31,15 +33,22 @@ const App = () => {
     fetchTodos();
   }, []);
   //
+ 
 
 return (
   <>
-    <Nav />
+    <Nav 
+      allTodos={allTodos}
+      setCurrentClicked={setCurrentClicked}
+      currentClicked={currentClicked}
+    />
     <Content
       allTodos={allTodos}
       setModalStatus={setModalStatus}
       setAllTodos={setAllTodos}
       setSelectedTodo={setSelectedTodo}
+      currentClicked={currentClicked}
+   //   setCurrentClicked={setCurrentClicked}
     />
     <Modal
       modalStatus={modalStatus}
