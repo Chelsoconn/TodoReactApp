@@ -1,4 +1,4 @@
-import { allTodosMapper, resetCurrentClicked } from '..//services/utils'
+import { allTodosMapper, resetCurrentClicked, highlightClicked } from '..//services/utils'
 import { useEffect } from 'react'
 
 const Nav = ( {allTodos , setCurrentClicked, currentClicked} ) => {
@@ -11,21 +11,21 @@ const Nav = ( {allTodos , setCurrentClicked, currentClicked} ) => {
 
 
   useEffect(() => {
-    let name = currentClicked[1]
-    resetCurrentClicked(name, allTodos, setCurrentClicked, currentClicked)
+    if (currentClicked.length > 0) {
+      resetCurrentClicked(currentClicked[1], allTodos, setCurrentClicked, currentClicked[3])
+    }
   }, [allTodos])
 
 
   const Clickable = (e) => {
     const clicked = e.target.closest('[data-title]')
     if (clicked && clicked.hasAttribute('data-title') && clicked.dataset) {
-
+      document.querySelectorAll('.active').forEach(node => node.classList.remove('active'))
+      highlightClicked(e)
       const dates = clicked.dataset.title
-      const completedBool = e.target.closest('section').id
-      
-      resetCurrentClicked(dates, allTodos, setCurrentClicked, completedBool, currentClicked)
+      const completedBool = e.target.closest('section').id.includes('complete')   
+      resetCurrentClicked(dates, allTodos, setCurrentClicked, completedBool)
     }
-
   }
   
 
@@ -69,7 +69,7 @@ const Nav = ( {allTodos , setCurrentClicked, currentClicked} ) => {
 
              {allTodosMapper(completedTodos).map(todo => {
               return (
-                <dl data-title={todo} key={todo} data-total="" id="">
+                <dl data-title={todo} key={todo}>
                   <dt><time>{todo[0]}</time></dt>
                   <dd>{todo[1]}</dd>
               </dl>
@@ -88,34 +88,3 @@ const Nav = ( {allTodos , setCurrentClicked, currentClicked} ) => {
   
   export { Nav };
 
-
-
-
-  function isNull(dataset: any) {
-    throw new Error("Function not implemented.");
-  }
-  /*
-Have an onClick on the outer dl- 
-  data title is date 
-
-so we can take all the todos ... 
-  get all completed todos 
-
-
-
-
-For each todo 
-
-      <dl data-title="{{@key}}" data-total="{{this.length}}">
-        <dt><time>{{@key}}</time></dt>
-        <dd>{{this.length}}</dd>
-      </dl>
-
-For each Completed Todo
-
-     <dl data-title="{{@key}}" data-total="{{this.length}}" id="{{@key}}">
-        <dt><time>{{@key}}</time></dt>
-        <dd>{{this.length}}</dd>
-      </dl>
-
-  */

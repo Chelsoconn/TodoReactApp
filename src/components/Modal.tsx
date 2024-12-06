@@ -4,7 +4,7 @@ import {addTodo, editTodo} from "../services/requests";
 
 import { ModalProps } from '../types/types'
 
-const Modal = ( {modalStatus, setModalStatus, selectedTodo, setSelectedTodo, setAllTodos, allTodos }: ModalProps ) => {
+const Modal = ( {modalStatus, setModalStatus, selectedTodo, setSelectedTodo, setAllTodos, allTodos, setCurrentClicked }: ModalProps ) => {
   
   //set state of modal
   const [title, setTitle] = useState("");
@@ -35,7 +35,8 @@ const Modal = ( {modalStatus, setModalStatus, selectedTodo, setSelectedTodo, set
     }
     if (selectedTodo) {
       try {
-        const editedTodo = await editTodo(selectedTodo.id, {title, day, month, year, completed, description});
+        console.log('This is selected', selectedTodo.completed)
+        const editedTodo = await editTodo(selectedTodo.id, {title, day, month, year, completed: selectedTodo.completed, description});
         const allTodosEdited = allTodos.map(todo => todo.id === selectedTodo.id ? editedTodo : todo)
         setAllTodos(allTodosEdited) 
         setModalStatus(false);
@@ -47,6 +48,7 @@ const Modal = ( {modalStatus, setModalStatus, selectedTodo, setSelectedTodo, set
         const addedTodo = await addTodo({title, day, month, year, completed, description});
         setAllTodos([...allTodos, addedTodo]);
         setModalStatus(false);
+        setCurrentClicked([allTodos, 'All Todos', allTodos.length, false])
       } catch (error) {
         console.log(error);
       }
@@ -57,6 +59,7 @@ const Modal = ( {modalStatus, setModalStatus, selectedTodo, setSelectedTodo, set
   const handleMarkComplete = async(e: React.SyntheticEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (selectedTodo) {
       handleComplete( selectedTodo.id, true, allTodos, setAllTodos, setModalStatus, editTodo )
       setSelectedTodo(null)

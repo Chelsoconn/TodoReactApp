@@ -36,8 +36,6 @@ const handleYearChange = (setYear: React.Dispatch<React.SetStateAction<string>>,
     if (isString(value)) setYear(value)
 }
 
-
-
 const fillValues = ( 
     selectedTodo: TodoWithId | null, 
     formElements:  HTMLFormControlsCollection, 
@@ -114,7 +112,6 @@ const handleComplete = async( currentId: number, bool: boolean,
       setAllTodos(newTodoList);
       setModalStatus(false)
   
-      //SET CURRENTCLICKED HERE 
       try {
         if (updatedTodo) await editTodo(currentId, updatedTodo);
       } catch(error) {
@@ -128,75 +125,47 @@ const allTodosMapper = (arrayList) => {
   })  
   const allSortedDates = todosNav.sort((a,b) => new Date(a) - new Date(b))
   const counts = {}
-  const sortedDatesFormatted = (allSortedDates).map(date => {
+
+  allSortedDates.forEach(date => {
    if (date === '0') {
      counts['No Due Date'] = counts['No Due Date'] ?  counts['No Due Date'] + 1 : 1 
-     return 'No Due Date'
    } else {
      const sliced = date.slice(0,7).split(',').reverse().join('/')
      const fin = sliced.slice(0,3) + sliced.slice(5)
      counts[fin] = counts[fin] ? counts[fin] + 1 : 1
    }
   })
+
   const finalCompleted = Object.entries(counts)      
   return finalCompleted
 }
 
-  const matchingTodos = (listArr, dates) => {
-    return listArr.filter(todo => {
-      if ((!todo.month.trim() || !todo.year.trim()) && dates.includes('No Due Date')) return true
-      return (todo.month === dates.slice(0, 2) && todo.year.includes(dates.slice(3,5)))
-    })
+const matchingTodos = (listArr, dates) => {
+  return listArr.filter(todo => {
+    if ((!todo.month.trim() || !todo.year.trim()) && dates.includes('No Due Date')) return true
+    return (todo.month === dates.slice(0, 2) && todo.year.includes(dates.slice(3,5)))
+  })
+}
+
+const resetCurrentClicked = (dates, allTodos, setCurrentClicked, completedBool) => {
+  const completedTodos = allTodos.filter(todo => todo.completed)
+  if (dates === 'All Todos') {
+    setCurrentClicked([allTodos, 'All Todos', allTodos.length, false]);
+  } else if (dates === 'Completed') {
+    setCurrentClicked([completedTodos, 'Completed', completedTodos.length, true]);
+  } else {
+    const currentTodosToShow = (completedBool) ? matchingTodos(completedTodos, dates) : matchingTodos(allTodos, dates)
+    setCurrentClicked([currentTodosToShow, dates.split(',')[0], currentTodosToShow.length, completedBool ])
   }
+}
 
-
-  const resetCurrentClicked = (dates, allTodos, setCurrentClicked, completedBool, currentClicked) => {
-    const completedTodos = allTodos.filter(todo => todo.completed)
-
-    if (dates === 'All Todos') {
-    //  console.log('RESETTING THE CLICKED FROM ALL TODOS')
-      setCurrentClicked([allTodos, 'All Todos', allTodos.length, false]);
-    } else if (dates === 'Completed') {
-    //  console.log('RESETTING THE CLICKED FROM COMPLETED TODOS')
-      setCurrentClicked([completedTodos, 'Completed', completedTodos.length, true]);
-    } else {
-
-    
-      if (dates) {
-       
-        let currentTodosToShow;
-
-        if (completedBool) {
-          console.log("HIIIIIII", completedBool)
-          currentTodosToShow = (completedBool[3] || completedBool.includes('completed')) ? matchingTodos(completedTodos, dates) : matchingTodos(allTodos, dates)
-        } else {
-       //   currentTodosToShow = matchingTodos(allTodos, dates)
-        }
-        //console.log(currentTodosToShow, allTodos, dates)
-     
-        if (currentClicked) {
-         // console.log('YES')
-          let ans = currentClicked[3]
-          setCurrentClicked([currentTodosToShow, dates.split(',')[0], currentTodosToShow.length, ans ])
-        } else {
-         // console.log('NO')
-          let ans = currentClicked
-          console.log(ans)
-          setCurrentClicked([currentTodosToShow, dates, currentTodosToShow.length, ans ])
-        }
-
-
-      }
-      
-
-
-    }
+const highlightClicked = (e) => {
+  if (e.target.textContent === 'All Todos' || e.target.textContent === 'Completed') {
+    e.target.closest('header').classList.add('active')
+  } else {
+    e.target.closest('dl').classList.add('active')
   }
-
-
-
-
-
+} 
 
 export { 
     exitModalFunction, 
@@ -209,5 +178,6 @@ export {
     sortingAllTodos,
     handleComplete,
     allTodosMapper, 
-    resetCurrentClicked
+    resetCurrentClicked,
+    highlightClicked
  }

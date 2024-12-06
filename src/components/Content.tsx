@@ -9,7 +9,6 @@ const Content = ({
   setSelectedTodo,
   setAllTodos,
   currentClicked,
- // setCurrentClicked
 }: ContentProps) => {
   //event handling functions
   const addClickFunction = (): void => {

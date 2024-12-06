@@ -48,7 +48,6 @@ return (
       setAllTodos={setAllTodos}
       setSelectedTodo={setSelectedTodo}
       currentClicked={currentClicked}
-   //   setCurrentClicked={setCurrentClicked}
     />
     <Modal
       modalStatus={modalStatus}
@@ -57,6 +56,7 @@ return (
       setAllTodos={setAllTodos}
       selectedTodo={selectedTodo}
       setSelectedTodo={setSelectedTodo}
+      setCurrentClicked={setCurrentClicked}
     />
   </>
 );
