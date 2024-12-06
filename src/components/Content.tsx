@@ -10,7 +10,7 @@ const Content = ({
   setAllTodos,
   currentClicked,
 }: ContentProps) => {
-  //event handling functions
+  
   const addClickFunction = (): void => {
     setSelectedTodo(null);
     setModalStatus(true);

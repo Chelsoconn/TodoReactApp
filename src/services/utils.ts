@@ -119,12 +119,12 @@ const handleComplete = async( currentId: number, bool: boolean,
       }
 } 
 
-const allTodosMapper = (arrayList) => {
+const allTodosMapper = (arrayList: AllToDosWithId ): [string, number][] => {
   const todosNav = arrayList.map(todo => {
     return (todo.month.trim() && todo.year.trim()) ? (`${todo.year},${todo.month},${todo.day}`) : ('0')
   })  
-  const allSortedDates = todosNav.sort((a,b) => new Date(a) - new Date(b))
-  const counts = {}
+  const allSortedDates = todosNav.sort((a,b) => Number(new Date(a)) - Number(new Date(b)))
+  const counts: {[key:string]: number} = {}
 
   allSortedDates.forEach(date => {
    if (date === '0') {
@@ -140,14 +140,16 @@ const allTodosMapper = (arrayList) => {
   return finalCompleted
 }
 
-const matchingTodos = (listArr, dates) => {
+const matchingTodos = (listArr: AllToDosWithId, dates: string | undefined) => {
   return listArr.filter(todo => {
-    if ((!todo.month.trim() || !todo.year.trim()) && dates.includes('No Due Date')) return true
-    return (todo.month === dates.slice(0, 2) && todo.year.includes(dates.slice(3,5)))
+    if (dates) {
+      if ((!todo.month.trim() || !todo.year.trim()) && dates.includes('No Due Date')) return true
+      return (todo.month === dates.slice(0, 2) && todo.year.includes(dates.slice(3,5)))
+    }
   })
 }
 
-const resetCurrentClicked = (dates, allTodos, setCurrentClicked, completedBool) => {
+const resetCurrentClicked = (dates: string, allTodos: AllToDosWithId , setCurrentClicked: React.Dispatch<React.SetStateAction<[AllToDosWithId, string, number | string, boolean] | []>>, completedBool: boolean | undefined) => {
   const completedTodos = allTodos.filter(todo => todo.completed)
   if (dates === 'All Todos') {
     setCurrentClicked([allTodos, 'All Todos', allTodos.length, false]);
@@ -155,17 +157,24 @@ const resetCurrentClicked = (dates, allTodos, setCurrentClicked, completedBool) 
     setCurrentClicked([completedTodos, 'Completed', completedTodos.length, true]);
   } else {
     const currentTodosToShow = (completedBool) ? matchingTodos(completedTodos, dates) : matchingTodos(allTodos, dates)
-    setCurrentClicked([currentTodosToShow, dates.split(',')[0], currentTodosToShow.length, completedBool ])
+    if (completedBool !== undefined) setCurrentClicked([currentTodosToShow, dates.split(',')[0], currentTodosToShow.length, completedBool ])
   }
 }
 
-const highlightClicked = (e) => {
-  if (e.target.textContent === 'All Todos' || e.target.textContent === 'Completed') {
-    e.target.closest('header').classList.add('active')
+const highlightClicked = (e: React.SyntheticEvent<HTMLElement>) => {
+  const target = e.target as HTMLElement;
+  if (target.textContent === 'All Todos' || target.textContent === 'Completed') {
+    const closestHeader = target.closest('header');
+    if (closestHeader) {
+      closestHeader.classList.add('active');
+    }
   } else {
-    e.target.closest('dl').classList.add('active')
+    const closestDl = target.closest('dl');
+    if (closestDl) {
+      closestDl.classList.add('active');
+    }
   }
-} 
+}
 
 export { 
     exitModalFunction, 

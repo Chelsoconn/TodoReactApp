@@ -17,7 +17,7 @@ export interface ContentProps {
     setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
     setAllTodos: React.Dispatch<React.SetStateAction<AllToDosWithId>>;
     setSelectedTodo: React.Dispatch<React.SetStateAction<TodoWithId | null>>;
-    currentClicked: React.Dispatch<React.SetStateAction<[AllToDosWithId, string, number]>>;
+    currentClicked: [AllToDosWithId, string, number | string, boolean] | [];
 }
 
 export interface ModalProps {
@@ -27,6 +27,7 @@ export interface ModalProps {
     setSelectedTodo: React.Dispatch<React.SetStateAction<TodoWithId | null>>
     setAllTodos: React.Dispatch<React.SetStateAction<AllToDosWithId>>;
     allTodos: AllToDosWithId;
+    setCurrentClicked: React.Dispatch<React.SetStateAction<[AllToDosWithId, string, number | string, boolean] | []>>
 }
 
 export type exitModalFunctionProps = Pick<ContentProps, 'setModalStatus'| 'setSelectedTodo'>
@@ -38,6 +39,12 @@ export interface SetModalType {
     setYear: React.Dispatch<React.SetStateAction<string>>, 
     setDescription: React.Dispatch<React.SetStateAction<string>>, 
     setCompleted: React.Dispatch<React.SetStateAction<boolean>>, 
+   
 }
 
+export interface NavProps {
+    allTodos: AllToDosWithId;
+    setCurrentClicked: React.Dispatch<React.SetStateAction<[AllToDosWithId, string, number | string, boolean] | []>>;
+    currentClicked: [AllToDosWithId, string, number | string, boolean] | [];
+}
 
