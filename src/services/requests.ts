@@ -28,7 +28,7 @@ const deleteTodo = async (id: number) => {
     try {
       await axios.delete(`${URLBase}/todos/${id}`)
     } catch(error) {
-        throw new Error(`HIIIII ${error}`)
+        throw new Error(`There was an error deleting a todo ${error}`)
     }
 }
 
